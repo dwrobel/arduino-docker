@@ -2,9 +2,7 @@ Base Docker image for building Arduino projects within Docker
 
 #### Documentation
  ##### Building image
- ```# docker build -t dwrobel/arduino:30 .```
- #### Executing command within image
- ```$ docker-wrapper.sh <command-to-execute-within-docker>```
+ ```# docker build -t dwrobel/arduino:test .```
 
 #### Maintained by:
  [Damian Wrobel](mailto:dwrobel@ertelnet.rybnik.pl)

@@ -32,7 +32,3 @@ RUN echo >/etc/sudoers.d/wheel-no-passwd '%wheel	ALL=(ALL)	NOPASSWD: ALL'
 RUN dnf update -y
 
 RUN dnf clean all
-
-ADD entrypoint.sh /
-
-ENTRYPOINT ["/entrypoint.sh"]
