@@ -1,6 +1,6 @@
 #!/bin/bash -xe
 #
-# Copyright (C) 2018-2019 Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
+# Copyright (C) 2018-2020 Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 # Wraps commands with docker
 #
-# Usage: docker-wrapper.sh <command-to-execute-within-docker>
+# Usage: docker-wrapper.sh <command-to-execute-within-container>
 #
 # Note: It has also access to the entire $HOME directory
 
@@ -29,13 +29,15 @@ DIRECTORY=$(cd `dirname $0` && pwd)
 if [ $# -lt 1 ]; then
     set +x
     echo ""
-    echo "Docker wrapper by Damian Wrobel <dwrobel@ertelnet.rybnik.pl>"
+    echo "docker/podman wrapper by Damian Wrobel <dwrobel@ertelnet.rybnik.pl>"
     echo ""
-    echo "      Usage: $0 <command-to-execute-within-docker>"
+    echo "      Usage: $0 <command-to-execute-within-container>"
     echo "    Example: $0 bash"
     echo ""
     exit 1
 fi
+
+DOCKER_CMD=$(which podman || which docker)
 
 config_file="${DW_CONFIG_PATH:-${HOME}/.config/docker-wrapper.sh/dw-config.conf}"
 
@@ -48,7 +50,7 @@ fi
 
 if [ -z "${DOCKER_IMG}" ]; then
     DOCKER_IMG=dwrobel/docker-wrapper
-    sudo docker build --network=host "${DOCKER_BUILD[@]}" -t ${DOCKER_IMG} $DIRECTORY
+    sudo ${DOCKER_CMD} build --network=host "${DOCKER_BUILD[@]}" -t ${DOCKER_IMG} $DIRECTORY
 fi
 
 VDIR="$HOME"
@@ -79,4 +81,4 @@ fi
 
 test -t 1 && USE_TTY="-t"
 
-sudo docker run --network=host "${DOCKER_RUN[@]}" --entrypoint=/entrypoint.sh --privileged -p 3389:3389 -i ${USE_TTY} ${cache_dir} ${cc_opts} ${cxx_opts} ${wayland_display_opts} -e USER=$USER -e UID=$UID -e GID=$(id -g $USER) -e CWD="$CWD" ${display_opts} ${xdg_runtime_opts} -v /tmp/.X11-unix:/tmp/.X11-unix -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v "${VDIR}":"${VDIR}" ${DOCKER_IMG} "$@"
+sudo ${DOCKER_CMD} run --network=host "${DOCKER_RUN[@]}" --entrypoint=/entrypoint.sh --privileged -p 3389:3389 -i ${USE_TTY} ${cache_dir} ${cc_opts} ${cxx_opts} ${wayland_display_opts} -e USER=$USER -e UID=$UID -e GID=$(id -g $USER) -e CWD="$CWD" ${display_opts} ${xdg_runtime_opts} -v /tmp/.X11-unix:/tmp/.X11-unix -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v "${VDIR}":"${VDIR}" ${DOCKER_IMG} "$@"
