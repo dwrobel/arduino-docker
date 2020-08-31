@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2018-2019 Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
+# Copyright (C) 2018-2020 Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,11 +15,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-FROM fedora:31
+FROM fedora:32
 
 LABEL maintainer="dwrobel@ertelnet.rybnik.pl" description="Base Docker image for building Arduino projects"
 
-RUN dnf install -y make arduino-builder arduino-core avrdude ccache clang git-core mr picocom sudo
+RUN dnf install -y make arduino-builder arduino-core arduino-devel avrdude ccache clang git-core mr picocom sudo
 
 RUN echo >/etc/sudoers.d/wheel-no-passwd '%wheel	ALL=(ALL)	NOPASSWD: ALL'
 

@@ -1,4 +1,4 @@
-Base Docker image for building Arduino projects within Docker
+Base Docker image for building Arduino projects within Docker/Podman
 
 #### Documentation
  ##### Building image
