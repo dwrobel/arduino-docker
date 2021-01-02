@@ -16,15 +16,13 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-# Wraps commands with docker
+# Wraps commands with docker/podman
 #
 # Usage: docker-wrapper.sh <command-to-execute-within-container>
 #
 # Note: It has also access to the entire $HOME directory
 
 CWD=$PWD
-
-DIRECTORY=$(cd `dirname $0` && pwd)
 
 if [ $# -lt 1 ]; then
     set +x
@@ -37,6 +35,21 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
+
+function follow_links() (
+  cd -P "$(dirname -- "$1")"
+  file="$PWD/$(basename -- "$1")"
+  while [[ -h "$file" ]]; do
+    cd -P "$(dirname -- "$file")"
+    file="$(readlink -- "$file")"
+    cd -P "$(dirname -- "$file")"
+    file="$PWD/$(basename -- "$file")"
+  done
+  echo "$file"
+)
+
+PROG_NAME="$(follow_links "${BASH_SOURCE[0]}")"
+DIRECTORY="$(cd "${PROG_NAME%/*}" ; pwd -P)"
 DOCKER_CMD=$(which podman || which docker)
 
 config_file="${DW_CONFIG_PATH:-${HOME}/.config/docker-wrapper.sh/dw-config.conf}"
@@ -49,7 +62,7 @@ if [ -e "${config_file}" ]; then
 fi
 
 if [ -z "${DOCKER_IMG}" ]; then
-    DOCKER_IMG=dwrobel/docker-wrapper
+    DOCKER_IMG=dwrobel/arduino:test
     sudo ${DOCKER_CMD} build --network=host "${DOCKER_BUILD[@]}" -t ${DOCKER_IMG} $DIRECTORY
 fi
 

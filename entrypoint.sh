@@ -16,11 +16,19 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 groupadd --non-unique --gid $GID "$USER" || test $? = 9
-useradd --no-create-home -G wheel --uid $UID --gid $GID "$USER" || test $? = 9
 
-gid=$(stat -c "%G" /dev/dri/card0 2>/dev/null || echo "")
+if getent group wheel; then
+    extra_group="-G wheel"
+elif getent group sudo; then
+    extra_group="-G sudo"
+fi
+
+useradd --non-unique --no-create-home ${extra_group} --uid $UID --gid $GID "$USER" || test $? = 9
+
+gid=$(stat -c "%g" /dev/dri/card0 2>/dev/null || echo "")
 
 if [ x${gid} != "x" ]; then
+    groupadd --non-unique --gid $gid _video || true
     usermod -a -G $gid $USER || true
 fi
 
@@ -41,7 +49,7 @@ if [ -f /etc/profile.d/ccache.sh ] ; then
     if [ -w "$CACHE_DIR" ] && [ -d "$CACHE_DIR" ] ; then
         export CCACHE_DIR=$CACHE_DIR/ccache
         sudo -u "$USER" mkdir -p $CCACHE_DIR
-        sudo -u "$USER" --preserve-env=CCACHE_DIR ccache --set-config=max_size=2G
+        sudo -u "$USER" --preserve-env=CCACHE_DIR ccache --set-config=max_size=5G
         preserved_envs="$preserved_envs,CCACHE_DIR"
     fi
 
@@ -49,7 +57,13 @@ if [ -f /etc/profile.d/ccache.sh ] ; then
            /etc/profile.d/ccache.sh
 
     source /etc/profile.d/ccache.sh
-
 fi
 
+if [ -d /usr/lib/ccache ]; then
+  export PATH=/usr/lib/ccache:$PATH
+fi
+
+echo "onemw docker/podman wrapper by Damian Wrobel <dwrobel@ertelnet.rybnik.pl>"
+
 sudo -H -u "$USER" --preserve-env=$preserved_envs "$@"
+
