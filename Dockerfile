@@ -15,7 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-FROM fedora:32
+FROM fedora:33
 
 LABEL maintainer="dwrobel@ertelnet.rybnik.pl" description="Base Docker image for building Arduino projects"
 
