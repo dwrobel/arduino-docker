@@ -1,6 +1,6 @@
 #!/bin/bash -xe
 #
-# Copyright (C) 2018-2020 Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
+# Copyright (C) 2018-2021 Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-# Wraps commands with docker/podman
+# Wraps commands with podman/docker
 #
 # Usage: docker-wrapper.sh <command-to-execute-within-container>
 #
@@ -27,7 +27,7 @@ CWD=$PWD
 if [ $# -lt 1 ]; then
     set +x
     echo ""
-    echo "docker/podman wrapper by Damian Wrobel <dwrobel@ertelnet.rybnik.pl>"
+    echo "podman/docker wrapper by Damian Wrobel <dwrobel@ertelnet.rybnik.pl>"
     echo ""
     echo "      Usage: $0 <command-to-execute-within-container>"
     echo "    Example: $0 bash"
@@ -80,6 +80,10 @@ if [ -n "${XDG_RUNTIME_DIR}" ]; then
     xdg_runtime_opts="-e XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR} -v ${XDG_RUNTIME_DIR}:${XDG_RUNTIME_DIR}"
 fi
 
+if [ -d /tmp/.X11-unix ]; then
+    tmp_x11_unix="-v /tmp/.X11-unix:/tmp/.X11-unix"
+fi
+
 if [ -n "${CC}" ]; then
     cc_opts="-e CC=$CC"
 fi
@@ -94,4 +98,4 @@ fi
 
 test -t 1 && USE_TTY="-t"
 
-sudo ${DOCKER_CMD} run --network=host "${DOCKER_RUN[@]}" --entrypoint=/entrypoint.sh --privileged -p 3389:3389 -v /dev/dri:/dev/dri -i ${USE_TTY} ${cache_dir} ${cc_opts} ${cxx_opts} ${wayland_display_opts} -e USER=$USER -e UID=$UID -e GID=$(id -g $USER) -e CWD="$CWD" ${display_opts} ${xdg_runtime_opts} -v /tmp/.X11-unix:/tmp/.X11-unix -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v "${VDIR}":"${VDIR}" ${DOCKER_IMG} "$@"
+sudo ${DOCKER_CMD} run --network=host "${DOCKER_RUN[@]}" --entrypoint=/entrypoint.sh --privileged -v /dev/dri:/dev/dri -i ${USE_TTY} ${cache_dir} ${cc_opts} ${cxx_opts} ${wayland_display_opts} -e USER=$USER -e UID=$UID -e GID=$(id -g $USER) -e CWD="$CWD" ${display_opts} ${xdg_runtime_opts} ${tmp_x11_unix} -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v "${VDIR}":"${VDIR}" ${DOCKER_IMG} "$@"

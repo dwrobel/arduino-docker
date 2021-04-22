@@ -1,4 +1,4 @@
-Base Docker image for building Arduino projects within Docker/Podman
+Base OCI image for building Arduino projects within Podman/Docker
 
 #### Documentation
  ##### Building image

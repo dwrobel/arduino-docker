@@ -1,6 +1,6 @@
 #!/bin/bash -xe
 #
-# Copyright (C) 2018-2019 Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
+# Copyright (C) 2018-2021 Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,9 +18,9 @@
 groupadd --non-unique --gid $GID "$USER" || test $? = 9
 
 if getent group wheel; then
-    extra_group="-G wheel"
+    extra_group="-G wheel,dialout"
 elif getent group sudo; then
-    extra_group="-G sudo"
+    extra_group="-G sudo,dialout"
 fi
 
 useradd --non-unique --no-create-home ${extra_group} --uid $UID --gid $GID "$USER" || test $? = 9

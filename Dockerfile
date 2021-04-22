@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2018-2020 Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
+# Copyright (C) 2018-2021 Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 
 FROM fedora:33
 
-LABEL maintainer="dwrobel@ertelnet.rybnik.pl" description="Base Docker image for building Arduino projects"
+LABEL maintainer="dwrobel@ertelnet.rybnik.pl" description="Base OCI image for building Arduino projects"
 
 RUN dnf install -y make arduino-builder arduino-core arduino-devel avrdude ccache clang git-core mr picocom sudo
 
