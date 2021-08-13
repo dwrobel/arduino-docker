@@ -15,7 +15,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-FROM fedora:33
+FROM fedora:34
 
 LABEL maintainer="dwrobel@ertelnet.rybnik.pl" description="Base OCI image for building Arduino projects"
 
