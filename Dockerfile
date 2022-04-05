@@ -19,7 +19,7 @@ FROM fedora:34
 
 LABEL maintainer="dwrobel@ertelnet.rybnik.pl" description="Base OCI image for building Arduino projects"
 
-RUN dnf install -y make arduino-builder arduino-core arduino-devel avrdude ccache clang git-core mr picocom sudo
+RUN dnf install -y make arduino-builder arduino-core arduino-devel avrdude ccache clang git-core mr picocom sudo maven
 
 RUN echo >/etc/sudoers.d/wheel-no-passwd '%wheel	ALL=(ALL)	NOPASSWD: ALL'
 
