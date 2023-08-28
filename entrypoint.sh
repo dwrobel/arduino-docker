@@ -1,6 +1,6 @@
 #!/bin/bash -xe
 #
-# Copyright (C) 2018-2021 Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
+# Copyright (C) 2018 Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+echo "group membership: ${IDS}"
 groupadd --non-unique --gid $GID "$USER" || test $? = 9
 
 if getent group wheel; then
@@ -31,6 +32,10 @@ if [ x${gid} != "x" ]; then
     groupadd --non-unique --gid $gid _video || true
     usermod -a -G $gid $USER || true
 fi
+
+for g in ${IDS}; do
+    usermod -a -G ${g} $USER || true
+done
 
 if [ -z ${XDG_RUNTIME_DIR} ]; then
     XDG_RUNTIME_DIR=/run/user/$UID
@@ -63,7 +68,7 @@ if [ -d /usr/lib/ccache ]; then
   export PATH=/usr/lib/ccache:$PATH
 fi
 
-echo "onemw docker/podman wrapper by Damian Wrobel <dwrobel@ertelnet.rybnik.pl>"
+echo "podman/docker wrapper by Damian Wrobel <dwrobel@ertelnet.rybnik.pl>"
 
 sudo -H -u "$USER" --preserve-env=$preserved_envs "$@"
 

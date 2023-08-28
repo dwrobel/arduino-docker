@@ -1,6 +1,6 @@
 #!/bin/bash -xe
 #
-# Copyright (C) 2018-2021 Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
+# Copyright (C) 2018 Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -84,6 +84,10 @@ if [ -d /tmp/.X11-unix ]; then
     tmp_x11_unix="-v /tmp/.X11-unix:/tmp/.X11-unix"
 fi
 
+if [ -d ${VDIR}/.Xauthority ]; then
+    xauthority="-v ${VDIR}/.Xauthority:${VDIR}/.Xauthority"
+fi
+
 if [ -n "${CC}" ]; then
     cc_opts="-e CC=$CC"
 fi
@@ -98,4 +102,4 @@ fi
 
 test -t 1 && USE_TTY="-t"
 
-sudo ${DOCKER_CMD} run --network=host "${DOCKER_RUN[@]}" --entrypoint=/entrypoint.sh --privileged -v /dev/dri:/dev/dri -i ${USE_TTY} ${cache_dir} ${cc_opts} ${cxx_opts} ${wayland_display_opts} -e USER=$USER -e UID=$UID -e GID=$(id -g $USER) -e CWD="$CWD" ${display_opts} ${xdg_runtime_opts} ${tmp_x11_unix} -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v "${VDIR}":"${VDIR}" ${DOCKER_IMG} "$@"
+sudo ${DOCKER_CMD} run --network=host "${DOCKER_RUN[@]}" --entrypoint=/entrypoint.sh --privileged -v /dev/dri:/dev/dri -i ${USE_TTY} -e IDS="$(id -G)" ${cache_dir} ${cc_opts} ${cxx_opts} ${wayland_display_opts} -e USER=$USER -e UID=$UID -e GID=$(id -g $USER) -e CWD="$CWD" ${display_opts} ${xdg_runtime_opts} ${tmp_x11_unix} ${xauthority} -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v "${VDIR}":"${VDIR}" ${DOCKER_IMG} "$@"
